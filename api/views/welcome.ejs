@@ -1,0 +1,29 @@
+<%- include partials/header.ejs %>
+
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-6 mx-auto">
+                        <div class="card rounded-0">
+                            <div class="card-header">
+                                <h1 class="text-center">Welcome
+                                    <%= username %>
+                                </h1>
+                            </div>
+                            <div class="card-body">
+                                <fb:login-button class="text-center" data-auto-logout-link="true" scope="public_profile,email" size="large"></fb:login-button>
+                            </div>
+                            <!--/card-block-->
+                        </div>
+                    </div>
+                </div>
+                <!--/row-->
+            </div>
+            <!--/col-->
+        </div>
+        <!--/row-->
+    </div>
+    <!--/container-->
+
+    <%- include partials/footer.ejs %>

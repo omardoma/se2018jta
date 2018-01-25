@@ -1,0 +1,66 @@
+<script src="/jquery/dist/jquery.min.js"></script>
+<script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="//connect.facebook.net/en_US/sdk.js"></script>
+<script src="https://www.gstatic.com/firebasejs/4.9.0/firebase.js"></script>
+<script>
+    var config = {
+        apiKey: '<%= FIREBASE_API_KEY %>',
+        authDomain: '<%= FIREBASE_AUTH_DOMAIN %>'
+    };
+    firebase.initializeApp(config);
+
+    function isUserEqual(facebookAuthResponse, firebaseUser) {
+        if (firebaseUser) {
+            var providerData = firebaseUser.providerData;
+            for (var i = 0; i < providerData.length; i++) {
+                if (providerData[i].providerId === firebase.auth.FacebookAuthProvider.PROVIDER_ID &&
+                    providerData[i].uid === facebookAuthResponse.userID) {
+                    // We don't need to re-auth the Firebase connection.
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    function checkLoginState(event) {
+        if (event.authResponse) {
+            // User is signed-in Facebook.
+            var unsubscribe = firebase.auth().onAuthStateChanged(function (firebaseUser) {
+                unsubscribe();
+                // Check if we are already signed-in Firebase with the correct user.
+                if (!isUserEqual(event.authResponse, firebaseUser)) {
+                    // Build Firebase credential with the Facebook auth token.
+                    var credential = firebase.auth.FacebookAuthProvider.credential(
+                        event.authResponse.accessToken);
+                    // Sign in with the credential from the Facebook user.
+                    firebase.auth().signInWithCredential(credential).then(function (user) {
+                        location.href = '/welcome/' + user.displayName;
+                    }).catch(function (error) {
+                        alert(error.message);
+                    });
+                } else {
+                    // User is already signed-in Firebase with the correct user.
+                    if (!location.href.includes('/welcome'))
+                        location.href = '/welcome/' + firebaseUser.displayName;
+                }
+            });
+        } else {
+            // User is signed-out of Facebook.
+            firebase.auth().signOut();
+            location.href = '/login';
+        }
+    }
+</script>
+<script>
+    FB.init({
+        appId: '<%= fbAppId %>',
+        status: true,
+        xfbml: true,
+        version: 'v2.11'
+    });
+    FB.Event.subscribe('auth.authResponseChange', checkLoginState);
+</script>
+</body>
+
+</html>
