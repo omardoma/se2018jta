@@ -12,6 +12,8 @@ GUC Software Engineering 2018 Junior Teaching Assistant Task.
 
 * Node.js v8
 * Express.js v4
+* Firebase v4
+* EJS
 
 #### How to run?
 
